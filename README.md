@@ -239,6 +239,7 @@ This repository is meant to be used for the development of the Well-Architected 
 - [🔍wara](docs/wara/wara.md)
 - [🎗️advisor](docs/advisor/advisor.md)
 - [📦collector](docs/collector/collector.md)
+- [📊monitoring](docs/monitoring/monitoring.md)
 - [🌩️outage](docs/outage/outage.md)
 - [🏖️retirement](docs/retirement/retirement.md)
 - [🔬scope](docs/scope/scope.md)
