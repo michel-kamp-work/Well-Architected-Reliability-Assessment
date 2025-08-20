@@ -438,3 +438,200 @@ Describe 'Test-WAFMonitoringCoverage' {
         }
     }
 }
+
+Describe 'Test-WAFAMBACompliance' -Tag 'AMBA' {
+    Context 'When testing AMBA compliance for Azure resources' {
+        It 'Should return monitoring configuration objects for AMBA compliance' {
+            $mockResources = @(
+                @{
+                    id = '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test-rg/providers/Microsoft.Compute/virtualMachines/test-vm'
+                    name = 'test-vm'
+                    type = 'Microsoft.Compute/virtualMachines'
+                    subscriptionId = '00000000-0000-0000-0000-000000000000'
+                    resourceGroup = 'test-rg'
+                    location = 'eastus'
+                    tags = @{}
+                }
+            )
+            
+            Mock Get-WAFMetricAlerts { return @() }
+            Mock Test-Path { return $true }
+            Mock Get-Content { return '{"alertDefinitions":{"compute":{"virtualMachines":[{"alertName":"VM CPU Percentage Alert","metricName":"Percentage CPU","threshold":85,"operator":"GreaterThan","severity":2,"timeAggregation":"Average"}]}}}' }
+            Mock ConvertFrom-Json { 
+                return [PSCustomObject]@{
+                    alertDefinitions = [PSCustomObject]@{
+                        compute = [PSCustomObject]@{
+                            virtualMachines = @([PSCustomObject]@{
+                                alertName = 'VM CPU Percentage Alert'
+                                metricName = 'Percentage CPU'
+                                threshold = 85
+                                operator = 'GreaterThan'
+                                severity = 2
+                                timeAggregation = 'Average'
+                            })
+                        }
+                    }
+                }
+            }
+            
+            $SubscriptionIds = @('00000000-0000-0000-0000-000000000000')
+            $result = Test-WAFAMBACompliance -Resources $mockResources -SubscriptionIds $SubscriptionIds
+            
+            $result | Should -Not -BeNullOrEmpty
+            $result[0].ConfigurationType | Should -Be 'AMBA'
+            $result[0].ConfigurationStatus | Should -Be 'Missing'
+            $result[0].Recommendation | Should -BeLike 'Create AMBA-compliant alert:*'
+        }
+    }
+}
+
+Describe 'Get-AMBARequirementsForResource' -Tag 'AMBA' {
+    Context 'When getting AMBA requirements for different resource types' {
+        It 'Should return applicable AMBA alert definitions for virtual machines' {
+            $mockResource = [PSCustomObject]@{
+                type = 'Microsoft.Compute/virtualMachines'
+            }
+            
+            $mockAMBADefinitions = [PSCustomObject]@{
+                alertDefinitions = [PSCustomObject]@{
+                    compute = [PSCustomObject]@{
+                        virtualMachines = @(
+                            [PSCustomObject]@{
+                                alertName = 'VM CPU Percentage Alert'
+                                metricName = 'Percentage CPU'
+                            }
+                        )
+                    }
+                }
+            }
+            
+            $result = Get-AMBARequirementsForResource -Resource $mockResource -AMBADefinitions $mockAMBADefinitions
+            
+            $result | Should -Not -BeNullOrEmpty
+            $result[0].alertName | Should -Be 'VM CPU Percentage Alert'
+        }
+        
+        It 'Should return empty array for unsupported resource types' {
+            $mockResource = [PSCustomObject]@{
+                type = 'Microsoft.UnsupportedService/resources'
+            }
+            
+            $mockAMBADefinitions = [PSCustomObject]@{
+                alertDefinitions = [PSCustomObject]@{}
+            }
+            
+            $result = Get-AMBARequirementsForResource -Resource $mockResource -AMBADefinitions $mockAMBADefinitions
+            
+            $result | Should -BeNullOrEmpty
+        }
+    }
+}
+
+Describe 'Test-AMBACompliance' -Tag 'AMBA' {
+    Context 'When testing compliance against AMBA definitions' {
+        It 'Should return Missing status when no matching alert exists' {
+            $mockResource = [PSCustomObject]@{
+                id = '/subscriptions/test/resourceGroups/test/providers/Microsoft.Compute/virtualMachines/test-vm'
+            }
+            
+            $mockAMBADefinition = [PSCustomObject]@{
+                alertName = 'VM CPU Percentage Alert'
+                metricName = 'Percentage CPU'
+                threshold = 85
+                operator = 'GreaterThan'
+                severity = 2
+                timeAggregation = 'Average'
+            }
+            
+            $mockExistingAlerts = @()
+            
+            $result = Test-AMBACompliance -Resource $mockResource -AMBADefinition $mockAMBADefinition -ExistingAlerts @()
+            
+            $result.Status | Should -Be 'Missing'
+            $result.Impact | Should -Be 'High'
+            $result.Recommendation | Should -BeLike 'Create AMBA-compliant alert:*'
+        }
+        
+        It 'Should return Compliant status when alert matches AMBA specifications' {
+            $mockResource = [PSCustomObject]@{
+                id = '/subscriptions/test/resourceGroups/test/providers/Microsoft.Compute/virtualMachines/test-vm'
+            }
+            
+            $mockAMBADefinition = [PSCustomObject]@{
+                alertName = 'VM CPU Percentage Alert'
+                metricName = 'Percentage CPU'
+                threshold = 85
+                operator = 'GreaterThan'
+                severity = 2
+                timeAggregation = 'Average'
+            }
+            
+            $mockExistingAlerts = @(
+                [PSCustomObject]@{
+                    name = 'existing-cpu-alert'
+                    properties = [PSCustomObject]@{
+                        scopes = @('/subscriptions/test/resourceGroups/test/providers/Microsoft.Compute/virtualMachines/test-vm')
+                        severity = 2
+                        criteria = [PSCustomObject]@{
+                            allOf = @(
+                                [PSCustomObject]@{
+                                    metricName = 'Percentage CPU'
+                                    threshold = 85
+                                    operator = 'GreaterThan'
+                                    timeAggregation = 'Average'
+                                }
+                            )
+                        }
+                    }
+                }
+            )
+            
+            $result = Test-AMBACompliance -Resource $mockResource -AMBADefinition $mockAMBADefinition -ExistingAlerts $mockExistingAlerts
+            
+            $result.Status | Should -Be 'Compliant'
+            $result.Impact | Should -Be 'Low'
+            $result.Recommendation | Should -Be 'AMBA alert properly configured'
+        }
+        
+        It 'Should return Modified status when alert exists but differs from AMBA specifications' {
+            $mockResource = [PSCustomObject]@{
+                id = '/subscriptions/test/resourceGroups/test/providers/Microsoft.Compute/virtualMachines/test-vm'
+            }
+            
+            $mockAMBADefinition = [PSCustomObject]@{
+                alertName = 'VM CPU Percentage Alert'
+                metricName = 'Percentage CPU'
+                threshold = 85
+                operator = 'GreaterThan'
+                severity = 2
+                timeAggregation = 'Average'
+            }
+            
+            $mockExistingAlerts = @(
+                [PSCustomObject]@{
+                    name = 'existing-cpu-alert'
+                    properties = [PSCustomObject]@{
+                        scopes = @('/subscriptions/test/resourceGroups/test/providers/Microsoft.Compute/virtualMachines/test-vm')
+                        severity = 1
+                        criteria = [PSCustomObject]@{
+                            allOf = @(
+                                [PSCustomObject]@{
+                                    metricName = 'Percentage CPU'
+                                    threshold = 90
+                                    operator = 'GreaterThan'
+                                    timeAggregation = 'Average'
+                                }
+                            )
+                        }
+                    }
+                }
+            )
+            
+            $result = Test-AMBACompliance -Resource $mockResource -AMBADefinition $mockAMBADefinition -ExistingAlerts $mockExistingAlerts
+            
+            $result.Status | Should -Be 'Modified'
+            $result.Impact | Should -Be 'Medium'
+            $result.Recommendation | Should -BeLike 'Update alert to match AMBA specifications:*'
+        }
+    }
+}

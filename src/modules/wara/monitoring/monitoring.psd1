@@ -84,6 +84,9 @@
         'Test-WAFApplicationInsightsCoverage',
         'Test-WAFMetricAlertCoverage',
         'Test-WAFActivityLogAlertCoverage',
+        'Test-WAFAMBACompliance',
+        'Get-AMBARequirementsForResource',
+        'Test-AMBACompliance',
         'Get-WAFAllResources'
     )
 

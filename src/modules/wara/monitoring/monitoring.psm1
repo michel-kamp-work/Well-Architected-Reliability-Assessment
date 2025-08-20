@@ -160,6 +160,12 @@ function Get-WAFMonitoringConfiguration {
         $monitoringObjects += Test-WAFActivityLogAlertCoverage -Resources $resources -ActivityLogAlerts $activityAlerts
     }
 
+    # Analyze AMBA (Azure Monitor Baseline Alerts) compliance
+    $ambaCompliance = Test-WAFAMBACompliance -Resources $resources -SubscriptionIds $subscriptionGuids
+    if ($ambaCompliance.Count -gt 0) {
+        $monitoringObjects += $ambaCompliance
+    }
+
     return $monitoringObjects
 }
 
@@ -950,4 +956,276 @@ function Test-WAFMonitoringCoverage {
     }
 
     return $analysis
+}
+
+<#
+.SYNOPSIS
+    Tests Azure resources for AMBA (Azure Monitor Baseline Alerts) compliance.
+
+.DESCRIPTION
+    Compares Azure resources against AMBA alert definitions to identify missing or modified alerts.
+
+.PARAMETER Resources
+    Array of Azure resources to analyze.
+
+.PARAMETER SubscriptionIds
+    Array of subscription IDs to scope the alert queries.
+
+.OUTPUTS
+    Returns an array of MonitoringConfigurationObj objects with AMBA compliance status.
+
+.EXAMPLE
+    $ambaCompliance = Test-WAFAMBACompliance -Resources $resources -SubscriptionIds @('sub1')
+#>
+function Test-WAFAMBACompliance {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [array] $Resources,
+
+        [Parameter(Mandatory = $true)]
+        [string[]] $SubscriptionIds
+    )
+
+    $monitoringObjects = @()
+    
+    try {
+        # Load AMBA definitions
+        $ambaDefinitionsPath = Join-Path $PSScriptRoot "AMBA_Alerts_Definitions.json"
+        if (-not (Test-Path $ambaDefinitionsPath)) {
+            Write-Warning "AMBA definitions file not found at: $ambaDefinitionsPath"
+            return $monitoringObjects
+        }
+
+        $ambaDefinitions = Get-Content $ambaDefinitionsPath | ConvertFrom-Json
+        
+        # Get existing metric alerts for comparison
+        $existingAlerts = Get-WAFMetricAlerts -SubscriptionIds $SubscriptionIds
+        
+        foreach ($resource in $Resources) {
+            $ambaChecks = Get-AMBARequirementsForResource -Resource $resource -AMBADefinitions $ambaDefinitions
+            
+            foreach ($ambaCheck in $ambaChecks) {
+                $complianceStatus = Test-AMBACompliance -Resource $resource -AMBADefinition $ambaCheck -ExistingAlerts $existingAlerts
+                
+                $configObj = [MonitoringConfigurationObj]::new($resource, "AMBA", $complianceStatus.Status, $complianceStatus.Details)
+                $configObj.Recommendation = $complianceStatus.Recommendation
+                $configObj.Impact = $complianceStatus.Impact
+                $configObj.Description = $complianceStatus.Description
+                
+                $monitoringObjects += $configObj
+            }
+        }
+    }
+    catch {
+        Write-Error "Error testing AMBA compliance: $($_.Exception.Message)"
+    }
+
+    return $monitoringObjects
+}
+
+<#
+.SYNOPSIS
+    Gets AMBA requirements for a specific Azure resource.
+
+.DESCRIPTION
+    Identifies which AMBA alert definitions apply to a given Azure resource type.
+
+.PARAMETER Resource
+    The Azure resource to analyze.
+
+.PARAMETER AMBADefinitions
+    The loaded AMBA definitions object.
+
+.OUTPUTS
+    Returns an array of applicable AMBA alert definitions.
+#>
+function Get-AMBARequirementsForResource {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [PSCustomObject] $Resource,
+
+        [Parameter(Mandatory = $true)]
+        [PSCustomObject] $AMBADefinitions
+    )
+
+    $applicableAlerts = @()
+    $resourceType = $Resource.type
+
+    # Map resource types to AMBA categories
+    $categoryMapping = @{
+        'Microsoft.Compute/virtualMachines' = 'compute.virtualMachines'
+        'Microsoft.Network/applicationGateways' = 'network.applicationGateways'
+        'Microsoft.Network/loadBalancers' = 'network.loadBalancers'
+        'Microsoft.Network/virtualNetworks' = 'network.virtualNetworks'
+        'Microsoft.Network/azureFirewalls' = 'network.azureFirewalls'
+        'Microsoft.Network/expressRouteCircuits' = 'network.expressRouteCircuits'
+        'Microsoft.Network/publicIPAddresses' = 'network.publicIPAddresses'
+        'Microsoft.Storage/storageAccounts' = 'storage.storageAccounts'
+        'Microsoft.Web/serverFarms' = 'web.serverFarms'
+        'Microsoft.Web/sites' = 'web.sites'
+        'Microsoft.OperationalInsights/workspaces' = 'operationalInsights.workspaces'
+        'Microsoft.Insights/components' = 'insights.components'
+        'Microsoft.Automation/automationAccounts' = 'automation.automationAccounts'
+        'Microsoft.RecoveryServices/vaults' = 'recoveryServices.vaults'
+        'Microsoft.KeyVault/vaults' = 'keyVault.vaults'
+        'Microsoft.KeyVault/managedHSMs' = 'keyVault.managedHSMs'
+        'Microsoft.CognitiveServices/accounts' = 'cognitiveServices.accounts'
+        'Microsoft.DocumentDB/databaseAccounts' = 'documentDB.databaseAccounts'
+        'Microsoft.EventHub/namespaces' = 'eventHub.namespaces'
+        'Microsoft.ServiceBus/namespaces' = 'serviceBus.namespaces'
+        'Microsoft.EventGrid/topics' = 'eventGrid.topics'
+        'Microsoft.Logic/workflows' = 'logic.workflows'
+        'Microsoft.ContainerRegistry/registries' = 'containerRegistry.registries'
+        'Microsoft.Batch/batchAccounts' = 'batch.batchAccounts'
+        'Microsoft.ApiManagement/service' = 'apiManagement.service'
+        'Microsoft.AnalysisServices/servers' = 'analysisServices.servers'
+        'Microsoft.Cdn/profiles' = 'cdn.profiles'
+        'Microsoft.DBforPostgreSQL/servers' = 'dbforPostgreSQL.servers'
+        'Microsoft.AVS/privateClouds' = 'avs.privateClouds'
+        'Microsoft.HybridCompute/machines' = 'hybridCompute.machines'
+    }
+
+    $categoryPath = $categoryMapping[$resourceType]
+    if ($categoryPath) {
+        $pathParts = $categoryPath -split '\.'
+        $category = $AMBADefinitions.alertDefinitions.$($pathParts[0])
+        
+        if ($category -and $pathParts[1]) {
+            $alerts = $category.$($pathParts[1])
+            if ($alerts) {
+                $applicableAlerts = $alerts
+            }
+        }
+    }
+
+    return $applicableAlerts
+}
+
+<#
+.SYNOPSIS
+    Tests compliance of a resource against a specific AMBA alert definition.
+
+.DESCRIPTION
+    Compares existing alerts against AMBA baseline definitions to determine compliance status.
+
+.PARAMETER Resource
+    The Azure resource being tested.
+
+.PARAMETER AMBADefinition
+    The AMBA alert definition to check against.
+
+.PARAMETER ExistingAlerts
+    Array of existing metric alerts.
+
+.OUTPUTS
+    Returns a compliance status object with details.
+#>
+function Test-AMBACompliance {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [PSCustomObject] $Resource,
+
+        [Parameter(Mandatory = $true)]
+        [PSCustomObject] $AMBADefinition,
+
+        [Parameter(Mandatory = $false)]
+        [AllowEmptyCollection()]
+        [array] $ExistingAlerts = @()
+    )
+
+    $result = @{
+        Status = "Missing"
+        Details = @{}
+        Recommendation = ""
+        Impact = ""
+        Description = ""
+    }
+
+    try {
+        # Find existing alerts for this resource that match the AMBA definition
+        $resourceAlerts = $ExistingAlerts | Where-Object { 
+            $_.properties.scopes -contains $Resource.id -and
+            $_.properties.criteria.allOf[0].metricName -eq $AMBADefinition.metricName
+        }
+
+        if ($resourceAlerts.Count -eq 0) {
+            # No matching alert found
+            $result.Status = "Missing"
+            $result.Recommendation = "Create AMBA-compliant alert: $($AMBADefinition.alertName)"
+            $result.Impact = "High"
+            $result.Description = "Missing recommended AMBA alert for $($AMBADefinition.metricName)"
+            $result.Details = @{
+                ExpectedAlert = $AMBADefinition.alertName
+                ExpectedMetric = $AMBADefinition.metricName
+                ExpectedThreshold = $AMBADefinition.threshold
+                ExpectedOperator = $AMBADefinition.operator
+                ExpectedSeverity = $AMBADefinition.severity
+            }
+        }
+        else {
+            # Alert exists, check if it matches AMBA specifications
+            $existingAlert = $resourceAlerts[0]
+            $criteria = $existingAlert.properties.criteria.allOf[0]
+            
+            $isCompliant = $true
+            $differences = @()
+
+            # Compare threshold
+            if ($criteria.threshold -ne $AMBADefinition.threshold) {
+                $isCompliant = $false
+                $differences += "Threshold: Expected $($AMBADefinition.threshold), Found $($criteria.threshold)"
+            }
+
+            # Compare operator
+            if ($criteria.operator -ne $AMBADefinition.operator) {
+                $isCompliant = $false
+                $differences += "Operator: Expected $($AMBADefinition.operator), Found $($criteria.operator)"
+            }
+
+            # Compare severity
+            if ($existingAlert.properties.severity -ne $AMBADefinition.severity) {
+                $isCompliant = $false
+                $differences += "Severity: Expected $($AMBADefinition.severity), Found $($existingAlert.properties.severity)"
+            }
+
+            # Compare time aggregation
+            if ($criteria.timeAggregation -ne $AMBADefinition.timeAggregation) {
+                $isCompliant = $false
+                $differences += "TimeAggregation: Expected $($AMBADefinition.timeAggregation), Found $($criteria.timeAggregation)"
+            }
+
+            if ($isCompliant) {
+                $result.Status = "Compliant"
+                $result.Recommendation = "AMBA alert properly configured"
+                $result.Impact = "Low"
+                $result.Description = "Alert meets AMBA baseline requirements"
+                $result.Details = @{
+                    AlertName = $existingAlert.name
+                    Compliant = $true
+                }
+            }
+            else {
+                $result.Status = "Modified"
+                $result.Recommendation = "Update alert to match AMBA specifications: $($differences -join '; ')"
+                $result.Impact = "Medium"
+                $result.Description = "Alert exists but doesn't match AMBA baseline configuration"
+                $result.Details = @{
+                    AlertName = $existingAlert.name
+                    Differences = $differences
+                    ExpectedConfiguration = $AMBADefinition
+                }
+            }
+        }
+    }
+    catch {
+        $result.Status = "Error"
+        $result.Recommendation = "Review AMBA compliance check"
+        $result.Impact = "Unknown"
+        $result.Description = "Error checking AMBA compliance: $($_.Exception.Message)"
+    }
+
+    return $result
 }

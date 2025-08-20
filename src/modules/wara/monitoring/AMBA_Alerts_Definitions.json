@@ -1,0 +1,1251 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Azure Monitor Baseline Alerts (AMBA) - Monitor Definitions",
+  "description": "Comprehensive collection of Azure Monitor alert definitions based on the Azure Monitor Baseline Alerts (AMBA) repository",
+  "version": "1.0.0",
+  "metadata": {
+    "source": "https://github.com/Azure/azure-monitor-baseline-alerts",
+    "createdDate": "2025-08-19",
+    "lastUpdated": "2025-08-19",
+    "author": "AMBA Alerts Generator"
+  },
+  "alertDefinitions": {
+    "compute": {
+      "virtualMachines": [
+        {
+          "alertName": "VM CPU Percentage Alert",
+          "description": "Percentage CPU usage",
+          "severity": 2,
+          "metricName": "Percentage CPU",
+          "operator": "GreaterThan",
+          "threshold": 85,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Compute/virtualMachines",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "VM Memory Percentage Alert",
+          "description": "Available Memory Bytes",
+          "severity": 2,
+          "metricName": "Available Memory Bytes",
+          "operator": "LessThan",
+          "threshold": 1073741824,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Compute/virtualMachines",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "VM Data Disk Space Alert",
+          "description": "Data disk space usage",
+          "severity": 2,
+          "metricName": "LogicalDisk Avg Disk Space Used %",
+          "operator": "GreaterThan",
+          "threshold": 90,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT15M",
+          "windowSize": "PT15M",
+          "resourceType": "Microsoft.Compute/virtualMachines",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "VM OS Disk Space Alert",
+          "description": "OS disk space usage",
+          "severity": 2,
+          "metricName": "LogicalDisk Avg Disk Space Used %",
+          "operator": "GreaterThan",
+          "threshold": 90,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT15M",
+          "windowSize": "PT15M",
+          "resourceType": "Microsoft.Compute/virtualMachines",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "VM HeartBeat Alert",
+          "description": "Virtual machine heartbeat monitoring",
+          "severity": 1,
+          "alertType": "LogAlert",
+          "query": "Heartbeat | summarize TimeGenerated=max(TimeGenerated) by Computer | where TimeGenerated < ago(5m)",
+          "timeAggregation": "Count",
+          "operator": "GreaterThan",
+          "threshold": 0,
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Compute/virtualMachines",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "VM Network Read Alert",
+          "description": "Network bytes received",
+          "severity": 2,
+          "metricName": "Network In Total",
+          "operator": "GreaterThan",
+          "threshold": 500000000,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Compute/virtualMachines",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "VM Network Write Alert",
+          "description": "Network bytes sent",
+          "severity": 2,
+          "metricName": "Network Out Total",
+          "operator": "GreaterThan",
+          "threshold": 500000000,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Compute/virtualMachines",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "VM OS Disk Read Latency Alert",
+          "description": "OS disk read latency",
+          "severity": 2,
+          "metricName": "OS Disk Read Latency",
+          "operator": "GreaterThan",
+          "threshold": 30,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Compute/virtualMachines",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "VM OS Disk Write Latency Alert",
+          "description": "OS disk write latency",
+          "severity": 2,
+          "metricName": "OS Disk Write Latency",
+          "operator": "GreaterThan",
+          "threshold": 30,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Compute/virtualMachines",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "VM Data Disk Read Latency Alert",
+          "description": "Data disk read latency",
+          "severity": 2,
+          "metricName": "Data Disk Read Latency",
+          "operator": "GreaterThan",
+          "threshold": 30,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Compute/virtualMachines",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "VM Data Disk Write Latency Alert",
+          "description": "Data disk write latency",
+          "severity": 2,
+          "metricName": "Data Disk Write Latency",
+          "operator": "GreaterThan",
+          "threshold": 30,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Compute/virtualMachines",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "network": {
+      "applicationGateways": [
+        {
+          "alertName": "AGW Application Gateway Total Time Alert",
+          "description": "Total time taken from when Application Gateway receives the first byte of the HTTP request to the time when the last response byte gets sent to the client",
+          "severity": 2,
+          "metricName": "ApplicationGatewayTotalTime",
+          "operator": "GreaterThan",
+          "threshold": 5000,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Network/applicationGateways",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "AGW Compute Units Alert",
+          "description": "Compute units consumed by Application Gateway",
+          "severity": 2,
+          "metricName": "ComputeUnits",
+          "operator": "GreaterThan",
+          "threshold": 80,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Network/applicationGateways",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "AGW CPU Utilization Alert",
+          "description": "Current CPU utilization of the Application Gateway",
+          "severity": 2,
+          "metricName": "CpuUtilization",
+          "operator": "GreaterThan",
+          "threshold": 80,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Network/applicationGateways",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "AGW Failed Requests Alert",
+          "description": "Count of failed requests that Application Gateway has served",
+          "severity": 2,
+          "metricName": "FailedRequests",
+          "operator": "GreaterThan",
+          "threshold": 10,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Network/applicationGateways",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "AGW Unhealthy Host Count Alert",
+          "description": "Number of unhealthy backend hosts",
+          "severity": 1,
+          "metricName": "UnhealthyHostCount",
+          "operator": "GreaterThan",
+          "threshold": 0,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Network/applicationGateways",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "AGW Response Status Alert",
+          "description": "Http response status returned by Application Gateway",
+          "severity": 2,
+          "metricName": "ResponseStatus",
+          "operator": "GreaterThan",
+          "threshold": 10,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Network/applicationGateways",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ],
+      "loadBalancers": [
+        {
+          "alertName": "Load Balancer VIP Availability Alert",
+          "description": "Average Load Balancer data path availability per time duration",
+          "severity": 0,
+          "metricName": "VipAvailability",
+          "operator": "LessThan",
+          "threshold": 90,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Network/loadBalancers",
+          "enabled": true,
+          "autoMitigate": false
+        },
+        {
+          "alertName": "ALB Data Path Availability Alert",
+          "description": "Average Load Balancer data path availability per time duration",
+          "severity": 0,
+          "metricName": "DipAvailability",
+          "operator": "LessThan",
+          "threshold": 90,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Network/loadBalancers",
+          "enabled": true,
+          "autoMitigate": false
+        },
+        {
+          "alertName": "ALB Global Backend Availability Alert",
+          "description": "Average Load Balancer global backend availability",
+          "severity": 1,
+          "metricName": "GlobalBackendAvailability",
+          "operator": "LessThan",
+          "threshold": 90,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Network/loadBalancers",
+          "enabled": true,
+          "autoMitigate": false
+        },
+        {
+          "alertName": "ALB Health Probe Status Alert",
+          "description": "Load Balancer health probe status",
+          "severity": 2,
+          "metricName": "HealthProbeStatus",
+          "operator": "LessThan",
+          "threshold": 90,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Network/loadBalancers",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ],
+      "virtualNetworks": [
+        {
+          "alertName": "VNet DDoS Attack Alert",
+          "description": "DDoS attack detection for Virtual Network",
+          "severity": 1,
+          "alertType": "ActivityLogAlert",
+          "categoryName": "Administrative",
+          "operationName": "Microsoft.Network/ddosProtectionPlans/ddosProtectionPlanProfiles/mitigation/action",
+          "resourceType": "Microsoft.Network/virtualNetworks",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ],
+      "azureFirewalls": [
+        {
+          "alertName": "Azure Firewall Health Alert",
+          "description": "Azure Firewall health state",
+          "severity": 1,
+          "metricName": "FirewallHealth",
+          "operator": "LessThan",
+          "threshold": 90,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Network/azureFirewalls",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "Azure Firewall SNAT Port Utilization Alert",
+          "description": "SNAT port utilization by Azure Firewall",
+          "severity": 1,
+          "metricName": "SNATPortUtilization",
+          "operator": "GreaterThan",
+          "threshold": 80,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Network/azureFirewalls",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ],
+      "expressRouteCircuits": [
+        {
+          "alertName": "ExpressRoute ARP Availability Alert",
+          "description": "ARP Availability from MSEE towards on-premises",
+          "severity": 0,
+          "metricName": "ArpAvailability",
+          "operator": "LessThan",
+          "threshold": 90,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Network/expressRouteCircuits",
+          "enabled": true,
+          "autoMitigate": false
+        },
+        {
+          "alertName": "ExpressRoute BGP Availability Alert",
+          "description": "BGP Availability from MSEE towards on-premises",
+          "severity": 0,
+          "metricName": "BgpAvailability",
+          "operator": "LessThan",
+          "threshold": 90,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Network/expressRouteCircuits",
+          "enabled": true,
+          "autoMitigate": false
+        }
+      ],
+      "publicIPAddresses": [
+        {
+          "alertName": "Public IP VIP Availability Alert",
+          "description": "Average IP Address availability per time duration",
+          "severity": 1,
+          "metricName": "VipAvailability",
+          "operator": "LessThan",
+          "threshold": 90,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Network/publicIPAddresses",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "storage": {
+      "storageAccounts": [
+        {
+          "alertName": "Storage Account Availability Alert",
+          "description": "The percentage of availability for the storage service or the specified API operation",
+          "severity": 1,
+          "metricName": "Availability",
+          "operator": "LessThan",
+          "threshold": 90,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Storage/storageAccounts",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "web": {
+      "serverFarms": [
+        {
+          "alertName": "App Service Plan CPU Percentage Alert",
+          "description": "CPU percentage usage of App Service Plan",
+          "severity": 2,
+          "metricName": "CpuPercentage",
+          "operator": "GreaterThan",
+          "threshold": 90,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Web/serverFarms",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "App Service Plan Memory Percentage Alert",
+          "description": "Memory percentage usage of App Service Plan",
+          "severity": 2,
+          "metricName": "MemoryPercentage",
+          "operator": "GreaterThan",
+          "threshold": 90,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Web/serverFarms",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "App Service Plan Disk Queue Length Alert",
+          "description": "Average number of read and write requests that were queued on storage",
+          "severity": 2,
+          "metricName": "DiskQueueLength",
+          "operator": "GreaterThan",
+          "threshold": 10,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Web/serverFarms",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "App Service Plan Http Queue Length Alert",
+          "description": "Average number of HTTP requests sitting in the queue",
+          "severity": 2,
+          "metricName": "HttpQueueLength",
+          "operator": "GreaterThan",
+          "threshold": 10,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Web/serverFarms",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ],
+      "sites": [
+        {
+          "alertName": "Function Execution Units Alert",
+          "description": "Function Execution Units. For FunctionApps only.",
+          "severity": 1,
+          "metricName": "FunctionExecutionUnits",
+          "operator": "GreaterThan",
+          "threshold": 80,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Web/sites",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "operationalInsights": {
+      "workspaces": [
+        {
+          "alertName": "LA Workspace Daily Cap Limit Reached Alert",
+          "description": "Log Analytics Workspace daily cap limit reached",
+          "severity": 1,
+          "alertType": "LogAlert",
+          "query": "Operation | where OperationCategory == \"Data Collection Status\" | where Detail contains \"OverQuota\"",
+          "timeAggregation": "Count",
+          "operator": "GreaterThan",
+          "threshold": 0,
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT1D",
+          "resourceType": "Microsoft.OperationalInsights/workspaces",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "insights": {
+      "components": [
+        {
+          "alertName": "Application Insights Throttling Limit Reached Alert",
+          "description": "Application Insights throttling limit reached",
+          "severity": 1,
+          "alertType": "LogAlert",
+          "query": "traces | where message contains \"throttled\"",
+          "timeAggregation": "Count",
+          "operator": "GreaterThan",
+          "threshold": 0,
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Insights/components",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "automation": {
+      "automationAccounts": [
+        {
+          "alertName": "Automation Account Total Job Alert",
+          "description": "Total number of jobs",
+          "severity": 2,
+          "metricName": "TotalJob",
+          "operator": "GreaterThan",
+          "threshold": 50,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Automation/automationAccounts",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "Automation Update Deployment Runs Alert",
+          "description": "Total software update deployment runs",
+          "severity": 1,
+          "metricName": "TotalUpdateDeploymentRuns",
+          "operator": "GreaterThan",
+          "threshold": 10,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT5M",
+          "windowSize": "PT15M",
+          "resourceType": "Microsoft.Automation/automationAccounts",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "recoveryServices": {
+      "vaults": [
+        {
+          "alertName": "Recovery Vault Backup Health Monitoring Alert",
+          "description": "Recovery Vault backup health monitoring",
+          "severity": 1,
+          "alertType": "LogAlert",
+          "query": "AddonAzureBackupJobs | where JobOperation == \"Backup\" | where JobStatus == \"Failed\"",
+          "timeAggregation": "Count",
+          "operator": "GreaterThan",
+          "threshold": 0,
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.RecoveryServices/vaults",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "keyVault": {
+      "vaults": [
+        {
+          "alertName": "Key Vault Availability Alert",
+          "description": "Vault requests availability",
+          "severity": 1,
+          "metricName": "Availability",
+          "operator": "LessThan",
+          "threshold": 90,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.KeyVault/vaults",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "Key Vault Capacity Alert",
+          "description": "Vault capacity used",
+          "severity": 2,
+          "metricName": "SaturationShoebox",
+          "operator": "GreaterThan",
+          "threshold": 75,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.KeyVault/vaults",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "Key Vault Latency Alert",
+          "description": "Vault request latency",
+          "severity": 3,
+          "metricName": "ServiceApiLatency",
+          "operator": "GreaterThan",
+          "threshold": 1000,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.KeyVault/vaults",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "Key Vault Requests Alert",
+          "description": "Number of vault requests",
+          "severity": 3,
+          "metricName": "ServiceApiResult",
+          "operator": "GreaterThan",
+          "threshold": 1000,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.KeyVault/vaults",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ],
+      "managedHSMs": [
+        {
+          "alertName": "HSM Availability Alert",
+          "description": "HSM requests availability",
+          "severity": 1,
+          "metricName": "Availability",
+          "operator": "LessThan",
+          "threshold": 90,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.KeyVault/managedHSMs",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "HSM Latency Alert",
+          "description": "HSM request latency",
+          "severity": 3,
+          "metricName": "ServiceApiLatency",
+          "operator": "GreaterThan",
+          "threshold": 1000,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.KeyVault/managedHSMs",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "cognitiveServices": {
+      "accounts": [
+        {
+          "alertName": "Cognitive Services Latency Alert",
+          "description": "Latency in milliseconds",
+          "severity": 2,
+          "metricName": "Latency",
+          "operator": "GreaterThan",
+          "threshold": 1000,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.CognitiveServices/accounts",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "Cognitive Services Server Errors Alert",
+          "description": "Number of calls with service internal error (HTTP response code 5xx)",
+          "severity": 1,
+          "metricName": "ServerErrors",
+          "operator": "GreaterThan",
+          "threshold": 0,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.CognitiveServices/accounts",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "documentDB": {
+      "databaseAccounts": [
+        {
+          "alertName": "Cosmos DB Total Requests Alert",
+          "description": "Number of requests made",
+          "severity": 2,
+          "metricName": "TotalRequests",
+          "operator": "GreaterThan",
+          "threshold": 1000,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.DocumentDB/databaseAccounts",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "Cosmos DB Offline Region Alert",
+          "description": "Region Offlined",
+          "severity": 0,
+          "metricName": "OfflineRegion",
+          "operator": "GreaterThan",
+          "threshold": 0,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.DocumentDB/databaseAccounts",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "eventHub": {
+      "namespaces": [
+        {
+          "alertName": "Event Hub Incoming Messages Alert",
+          "description": "Incoming Messages for Microsoft.EventHub",
+          "severity": 2,
+          "metricName": "IncomingMessages",
+          "operator": "LessThan",
+          "threshold": 1,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.EventHub/namespaces",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "Event Hub Server Errors Alert",
+          "description": "Server Errors for Microsoft.EventHub",
+          "severity": 1,
+          "metricName": "ServerErrors",
+          "operator": "GreaterThan",
+          "threshold": 0,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.EventHub/namespaces",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "serviceBus": {
+      "namespaces": [
+        {
+          "alertName": "Service Bus Incoming Messages Alert",
+          "description": "Incoming Messages for Microsoft.ServiceBus",
+          "severity": 2,
+          "metricName": "IncomingMessages",
+          "operator": "LessThan",
+          "threshold": 1,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.ServiceBus/namespaces",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "Service Bus Server Errors Alert",
+          "description": "Server Errors for Microsoft.ServiceBus",
+          "severity": 1,
+          "metricName": "ServerErrors",
+          "operator": "GreaterThan",
+          "threshold": 0,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.ServiceBus/namespaces",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "Service Bus User Errors Alert",
+          "description": "User Errors for Microsoft.ServiceBus",
+          "severity": 2,
+          "metricName": "UserErrors",
+          "operator": "GreaterThan",
+          "threshold": 0,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.ServiceBus/namespaces",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "eventGrid": {
+      "topics": [
+        {
+          "alertName": "Event Grid Dead Lettered Count Alert",
+          "description": "Total dead lettered events matching to this event subscription",
+          "severity": 1,
+          "metricName": "DeadLetteredCount",
+          "operator": "GreaterThan",
+          "threshold": 0,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.EventGrid/topics",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "Event Grid Publish Fail Count Alert",
+          "description": "Total events failed to publish to this topic",
+          "severity": 1,
+          "metricName": "PublishFailCount",
+          "operator": "GreaterThan",
+          "threshold": 0,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.EventGrid/topics",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "logic": {
+      "workflows": [
+        {
+          "alertName": "Logic App Runs Failed Alert",
+          "description": "Number of workflow runs failed",
+          "severity": 1,
+          "metricName": "RunsFailed",
+          "operator": "GreaterThan",
+          "threshold": 0,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Logic/workflows",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "Logic App Runs Succeeded Alert",
+          "description": "Number of workflow runs succeeded",
+          "severity": 3,
+          "metricName": "RunsSucceeded",
+          "operator": "LessThan",
+          "threshold": 1,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT5M",
+          "windowSize": "PT15M",
+          "resourceType": "Microsoft.Logic/workflows",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "containerRegistry": {
+      "registries": [
+        {
+          "alertName": "Container Registry Successful Push Count Alert",
+          "description": "Number of successful image pushes",
+          "severity": 3,
+          "metricName": "SuccessfulPushCount",
+          "operator": "LessThan",
+          "threshold": 1,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT5M",
+          "windowSize": "PT15M",
+          "resourceType": "Microsoft.ContainerRegistry/registries",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "Container Registry Successful Pull Count Alert",
+          "description": "Number of successful image pulls",
+          "severity": 3,
+          "metricName": "SuccessfulPullCount",
+          "operator": "LessThan",
+          "threshold": 1,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT5M",
+          "windowSize": "PT15M",
+          "resourceType": "Microsoft.ContainerRegistry/registries",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "batch": {
+      "batchAccounts": [
+        {
+          "alertName": "Batch Task Fail Event Alert",
+          "description": "Total number of tasks that have completed in a failed state",
+          "severity": 1,
+          "metricName": "TaskFailEvent",
+          "operator": "GreaterThan",
+          "threshold": 0,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Batch/batchAccounts",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "apiManagement": {
+      "service": [
+        {
+          "alertName": "API Management Failed Requests Alert",
+          "description": "Number of failures in gateway requests - Use multi-dimension request metric with GatewayResponseCodeCategory dimension instead",
+          "severity": 1,
+          "metricName": "FailedRequests",
+          "operator": "GreaterThan",
+          "threshold": 5,
+          "timeAggregation": "Total",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.ApiManagement/service",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "analysisServices": {
+      "servers": [
+        {
+          "alertName": "Analysis Services Memory Metric Alert",
+          "description": "Memory. Range 0-25 GB for S1, 0-50 GB for S2 and 0-100 GB for S4",
+          "severity": 2,
+          "metricName": "memory_metric",
+          "operator": "GreaterThan",
+          "threshold": 80,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.AnalysisServices/servers",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "cdn": {
+      "profiles": [
+        {
+          "alertName": "CDN Percentage 5XX Alert",
+          "description": "The percentage of all the client requests for which the response status code is 5XX",
+          "severity": 1,
+          "metricName": "Percentage5XX",
+          "operator": "GreaterThan",
+          "threshold": 5,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.Cdn/profiles",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "dbforPostgreSQL": {
+      "servers": [
+        {
+          "alertName": "PostgreSQL Server Log Storage Percent Alert",
+          "description": "Server Log storage percent",
+          "severity": 2,
+          "metricName": "serverlog_storage_percent",
+          "operator": "GreaterThan",
+          "threshold": 80,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT1M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.DBforPostgreSQL/servers",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "avs": {
+      "privateClouds": [
+        {
+          "alertName": "AVS Storage Usage Alert",
+          "description": "Storage Usage per Datastore",
+          "severity": 1,
+          "metricName": "DiskUsedPercentage",
+          "operator": "GreaterThan",
+          "threshold": 75,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT5M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.AVS/privateClouds",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "AVS Memory Critical Alert",
+          "description": "Memory Usage per Cluster (Critical)",
+          "severity": 0,
+          "metricName": "MemoryUsagePercentage",
+          "operator": "GreaterThan",
+          "threshold": 90,
+          "timeAggregation": "Average",
+          "evaluationFrequency": "PT5M",
+          "windowSize": "PT5M",
+          "resourceType": "Microsoft.AVS/privateClouds",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "hybridCompute": {
+      "machines": [
+        {
+          "alertName": "Hybrid VM Data Disk Read Latency Alert",
+          "description": "Hybrid VM data disk read latency",
+          "severity": 2,
+          "alertType": "LogAlert",
+          "query": "InsightsMetrics | where Origin == \"vm.azm.ms\" | where Namespace == \"LogicalDisk\" and Name == \"ReadLatencyMs\"",
+          "timeAggregation": "Average",
+          "operator": "GreaterThan",
+          "threshold": 30,
+          "evaluationFrequency": "PT15M",
+          "windowSize": "PT15M",
+          "resourceType": "Microsoft.HybridCompute/machines",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "Hybrid VM Data Disk Space Alert",
+          "description": "Hybrid VM data disk space",
+          "severity": 2,
+          "alertType": "LogAlert",
+          "query": "InsightsMetrics | where Origin == \"vm.azm.ms\" | where Namespace == \"LogicalDisk\" and Name == \"FreeSpacePercentage\"",
+          "timeAggregation": "Average",
+          "operator": "LessThan",
+          "threshold": 10,
+          "evaluationFrequency": "PT15M",
+          "windowSize": "PT15M",
+          "resourceType": "Microsoft.HybridCompute/machines",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "Hybrid VM Data Disk Write Latency Alert",
+          "description": "Hybrid VM data disk write latency",
+          "severity": 2,
+          "alertType": "LogAlert",
+          "query": "InsightsMetrics | where Origin == \"vm.azm.ms\" | where Namespace == \"LogicalDisk\" and Name == \"WriteLatencyMs\"",
+          "timeAggregation": "Average",
+          "operator": "GreaterThan",
+          "threshold": 30,
+          "evaluationFrequency": "PT15M",
+          "windowSize": "PT15M",
+          "resourceType": "Microsoft.HybridCompute/machines",
+          "enabled": true,
+          "autoMitigate": true
+        },
+        {
+          "alertName": "Hybrid VM HeartBeat Alert",
+          "description": "Hybrid VM heartbeat monitoring",
+          "severity": 1,
+          "alertType": "LogAlert",
+          "query": "Heartbeat | summarize TimeGenerated=max(TimeGenerated) by Computer | where TimeGenerated < ago(5m)",
+          "timeAggregation": "Count",
+          "operator": "GreaterThan",
+          "threshold": 0,
+          "evaluationFrequency": "PT5M",
+          "windowSize": "PT15M",
+          "resourceType": "Microsoft.HybridCompute/machines",
+          "enabled": true,
+          "autoMitigate": true
+        }
+      ]
+    },
+    "serviceHealth": [
+      {
+        "alertName": "Service Health Advisory Alert",
+        "description": "Service Health Advisory notifications",
+        "severity": 3,
+        "alertType": "ActivityLogAlert",
+        "categoryName": "ServiceHealth",
+        "properties": {
+          "incidentType": "ActionRequired"
+        },
+        "resourceType": "Microsoft.Resources/subscriptions",
+        "enabled": false,
+        "autoMitigate": true
+      },
+      {
+        "alertName": "Service Health Incident Alert",
+        "description": "Service Health Incident notifications",
+        "severity": 1,
+        "alertType": "ActivityLogAlert",
+        "categoryName": "ServiceHealth",
+        "properties": {
+          "incidentType": "Incident"
+        },
+        "resourceType": "Microsoft.Resources/subscriptions",
+        "enabled": false,
+        "autoMitigate": true
+      },
+      {
+        "alertName": "Service Health Maintenance Alert",
+        "description": "Service Health Maintenance notifications",
+        "severity": 2,
+        "alertType": "ActivityLogAlert",
+        "categoryName": "ServiceHealth",
+        "properties": {
+          "incidentType": "Maintenance"
+        },
+        "resourceType": "Microsoft.Resources/subscriptions",
+        "enabled": false,
+        "autoMitigate": true
+      },
+      {
+        "alertName": "Service Health Security Alert",
+        "description": "Service Health Security notifications",
+        "severity": 1,
+        "alertType": "ActivityLogAlert",
+        "categoryName": "ServiceHealth",
+        "properties": {
+          "incidentType": "Security"
+        },
+        "resourceType": "Microsoft.Resources/subscriptions",
+        "enabled": false,
+        "autoMitigate": true
+      },
+      {
+        "alertName": "Resource Health UnHealthy Alert",
+        "description": "Resource Health UnHealthy notifications",
+        "severity": 1,
+        "alertType": "ActivityLogAlert",
+        "categoryName": "ResourceHealth",
+        "properties": {
+          "currentHealthStatus": "Unavailable,Degraded"
+        },
+        "resourceType": "Microsoft.Resources/subscriptions",
+        "enabled": false,
+        "autoMitigate": true
+      }
+    ]
+  },
+  "alertCategories": {
+    "metric": {
+      "description": "Metric-based alerts that monitor Azure resource metrics",
+      "alertTypes": [
+        "staticThreshold",
+        "dynamicThreshold"
+      ]
+    },
+    "log": {
+      "description": "Log-based alerts that use KQL queries against Log Analytics workspaces",
+      "alertTypes": [
+        "logAlert"
+      ]
+    },
+    "activityLog": {
+      "description": "Activity log alerts for Azure resource management operations",
+      "alertTypes": [
+        "activityLogAlert"
+      ]
+    },
+    "serviceHealth": {
+      "description": "Service health alerts for Azure service incidents and maintenance",
+      "alertTypes": [
+        "serviceHealthAlert"
+      ]
+    }
+  },
+  "severityLevels": {
+    "0": {
+      "name": "Critical",
+      "description": "Critical alerts that require immediate attention"
+    },
+    "1": {
+      "name": "Error",
+      "description": "Error conditions that need prompt resolution"
+    },
+    "2": {
+      "name": "Warning",
+      "description": "Warning conditions that should be monitored"
+    },
+    "3": {
+      "name": "Informational",
+      "description": "Informational alerts for awareness"
+    },
+    "4": {
+      "name": "Verbose",
+      "description": "Verbose alerts for detailed monitoring"
+    }
+  },
+  "deploymentGuidance": {
+    "prerequisites": [
+      "Azure Monitor Log Analytics workspace",
+      "Appropriate RBAC permissions",
+      "Action groups for notifications"
+    ],
+    "deployment": {
+      "methods": [
+        "Azure Policy (recommended)",
+        "ARM Templates",
+        "Bicep Templates",
+        "PowerShell",
+        "Azure CLI"
+      ],
+      "scope": [
+        "Management Group",
+        "Subscription",
+        "Resource Group"
+      ]
+    },
+    "customization": {
+      "parameters": [
+        "threshold values",
+        "evaluation frequency",
+        "window size",
+        "action groups",
+        "enabled/disabled state"
+      ]
+    }
+  }
+}
